@@ -1,0 +1,38 @@
+{
+  "name": "vite-drupal-ckeditor5",
+  "version": "0.1.0",
+  "description": "Builds Drupal CKEditor 5 plugins with Vite instead of webpack.",
+  "keywords": [
+    "vite",
+    "vite-plugin",
+    "drupal",
+    "ckeditor5",
+    "ckeditor"
+  ],
+  "homepage": "https://github.com/heydon-consulting/vite-drupal/tree/main/packages/vite-drupal-ckeditor5#readme",
+  "bugs": {
+    "url": "https://github.com/heydon-consulting/vite-drupal/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heydon-consulting/vite-drupal.git",
+    "directory": "packages/vite-drupal-ckeditor5"
+  },
+  "license": "MIT",
+  "author": "Gordon Heydon",
+  "type": "module",
+  "exports": "./index.js",
+  "files": [
+    "index.js"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "dependencies": {
+    "vite-drupal-libraries": "^0.1.0",
+    "yaml": "^2.9.1"
+  },
+  "peerDependencies": {
+    "vite": "^8.0.0"
+  }
+}

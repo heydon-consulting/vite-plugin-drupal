@@ -1,0 +1,34 @@
+{
+  "name": "vite-drupal-npm-libraries",
+  "version": "0.1.0",
+  "description": "Copies prebuilt files from npm packages into the Vite build for Drupal libraries.",
+  "keywords": [
+    "vite",
+    "vite-plugin",
+    "drupal",
+    "npm",
+    "libraries"
+  ],
+  "homepage": "https://github.com/heydon-consulting/vite-drupal/tree/main/packages/vite-drupal-npm-libraries#readme",
+  "bugs": {
+    "url": "https://github.com/heydon-consulting/vite-drupal/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heydon-consulting/vite-drupal.git",
+    "directory": "packages/vite-drupal-npm-libraries"
+  },
+  "license": "MIT",
+  "author": "Gordon Heydon",
+  "type": "module",
+  "exports": "./index.js",
+  "files": [
+    "index.js"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "peerDependencies": {
+    "vite": "^8.0.0"
+  }
+}

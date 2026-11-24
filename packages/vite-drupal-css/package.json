@@ -1,0 +1,43 @@
+{
+  "name": "vite-drupal-css",
+  "version": "0.1.0",
+  "description": "Load paths and Tailwind @reference preloads from .info.yml for Drupal CSS built with Vite.",
+  "keywords": [
+    "vite",
+    "vite-plugin",
+    "drupal",
+    "css",
+    "tailwindcss"
+  ],
+  "homepage": "https://github.com/heydon-consulting/vite-drupal/tree/main/packages/vite-drupal-css#readme",
+  "bugs": {
+    "url": "https://github.com/heydon-consulting/vite-drupal/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heydon-consulting/vite-drupal.git",
+    "directory": "packages/vite-drupal-css"
+  },
+  "license": "MIT",
+  "author": "Gordon Heydon",
+  "type": "module",
+  "exports": "./index.js",
+  "files": [
+    "index.js"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "dependencies": {
+    "vite-drupal-libraries": "^0.1.0"
+  },
+  "peerDependencies": {
+    "vite": "^8.0.0",
+    "tailwindcss": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "tailwindcss": {
+      "optional": true
+    }
+  }
+}
