@@ -88,7 +88,8 @@ has to point the library at the copy, using the Vite manifest.
 | Option | Default | |
 |---|---|---|
 | `root` | `process.cwd()` | The project root |
-| `dirs` | `extensionDirs(root)` | The directories to look for extensions in |
+| `webRoot` | `'web'` | Drupal's web root (the directory with its `index.php`), relative to `root`: e.g. `'docroot'`, or `''` when Drupal is the project root |
+| `dirs` | `extensionDirs(root, webRoot)` | The directories to look for extensions in |
 
 In dev, the server restarts when a `*.libraries.yml`, `*.component.yml` or
 `.info.yml` changes.
@@ -98,10 +99,14 @@ In dev, the server restarts when a `*.libraries.yml`, `*.component.yml` or
 The other vite-plugin-drupal packages use these, and they're exported for your own
 plugins:
 
-- `extensionDirs(root)`: the directories Drupal finds extensions in:
-  `web/modules`, `web/themes`, `web/profiles`, and each site's own
-  `web/sites/<site>/modules` and `themes`.
-- `findExtensions(root, dirs)`: every module, theme and profile, keyed by directory, with its
-  name, site and parsed `.info.yml`.
+- `extensionDirs(root, webRoot = 'web')`: the directories Drupal finds
+  extensions in: the web root's `modules`, `themes` and `profiles`, and each
+  site's own `sites/<site>/modules` and `themes`.
+- `findExtensions(root, dirs, webRoot = 'web')`: every module, theme and
+  profile, keyed by directory, with its name, site and parsed `.info.yml`.
+  `dirs` defaults to `extensionDirs(root, webRoot)`.
+- `webPath(webRoot, file)`: a path in the web root, relative to the project
+  root (`webPath('docroot', 'sites')` is `docroot/sites`, and `webPath('',
+  'sites')` is `sites`).
 - `lookupExtension(extensions, name, site)`: an extension by machine name, as
   Drupal would find it for a site.

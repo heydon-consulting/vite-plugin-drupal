@@ -41,8 +41,10 @@ export default defineConfig({
 });
 ```
 
-The plugins expect a Composer-based Drupal project with the web root in `web/`,
-and Vite run from the project root.
+The plugins expect Vite to run from the project root, with Drupal's web root
+in `web/` as in a Composer-based project. For another layout, pass the same
+`webRoot` option to each plugin, e.g. `drupalLibraries({ webRoot: 'docroot' })`,
+or `''` when Drupal is the project root.
 
 ## Development
 

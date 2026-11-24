@@ -50,7 +50,7 @@ A file gets one theme's preloads: the nearest theme with `preload`, from its
 own up the `base theme:` chain (each theme's variables file imports the level
 above itself). A theme's files get their theme's. Files in modules and
 profiles get a theme's and then their own: `moduleTheme`'s, or for a module in
-a site's own directory (`web/sites/<site>/modules`), that site's theme from
+a site's own directory (`sites/<site>/modules` in the web root), that site's theme from
 `siteThemes`. In order:
 
 1. functions, the theme's then the module's;
@@ -69,8 +69,9 @@ extension's files.
 | `loadPaths` | `['node_modules']` | As the Sass CLI's `--load-path` |
 | `preload` | `{}` | Partials preloaded before every theme's, in the same shape as in `.info.yml` |
 | `moduleTheme` | `null` | The theme whose preloads modules and profiles get |
-| `siteThemes` | `{}` | The theme per site directory, for modules in `web/sites/<site>/`; keys are names or globs (`*`, `?`, `{a,b}`), an exact name winning, then the first matching glob |
-| `dirs` | `extensionDirs(root)` | The directories to look for extensions in |
+| `siteThemes` | `{}` | The theme per site directory, for modules in `sites/<site>/` in the web root; keys are names or globs (`*`, `?`, `{a,b}`), an exact name winning, then the first matching glob |
+| `webRoot` | `'web'` | Drupal's web root (the directory with its `index.php`), relative to `root`: e.g. `'docroot'`, or `''` when Drupal is the project root |
+| `dirs` | `extensionDirs(root, webRoot)` | The directories to look for extensions in |
 | `silenceDeprecations` | `['import', 'global-builtin', 'color-functions', 'slash-div', 'if-function', 'abs-percent']` | Sass deprecations not to warn about; `[]` shows them all |
 
 Needs `sass-embedded` (or `sass`) installed, as Vite does for SCSS.

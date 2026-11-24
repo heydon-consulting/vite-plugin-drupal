@@ -29,7 +29,8 @@ import { extensionDirs, findExtensions } from '@vite-plugin-drupal/libraries';
  */
 export default function ckeditor5Plugins({
   root = process.cwd(),
-  dirs = extensionDirs(root),
+  webRoot = 'web',
+  dirs = extensionDirs(root, webRoot),
 } = {}) {
   const pluginSource = /\/js\/ckeditor5_plugins\/([^/]+)\/src\//;
   const ckeditorImport = /^ckeditor5\/src\/([a-z0-9-]+)(?:\.js)?$/;
@@ -43,7 +44,7 @@ export default function ckeditor5Plugins({
     name: 'ckeditor5-plugins',
     enforce: 'pre',
 
-    config: () => ({ build: { rollupOptions: { input: findEntries(root, dirs) } } }),
+    config: () => ({ build: { rollupOptions: { input: findEntries(root, dirs, webRoot) } } }),
 
     // Re-read the definitions when they change.
     configureServer(server) {
@@ -138,9 +139,9 @@ export default function ckeditor5Plugins({
  *
  * The Drupal module that loads the build has to find the same sources.
  */
-function findEntries(root, dirs) {
+function findEntries(root, dirs, webRoot) {
   const entries = new Set();
-  for (const { name, dir, info } of findExtensions(root, dirs).values()) {
+  for (const { name, dir, info } of findExtensions(root, dirs, webRoot).values()) {
     const file = path.join(dir, `${name}.ckeditor5.yml`);
     if (!['module', 'profile'].includes(info.type) || !fs.existsSync(file)) {
       continue;

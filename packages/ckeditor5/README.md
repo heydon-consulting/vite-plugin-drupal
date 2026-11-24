@@ -45,4 +45,5 @@ dev server.
 | Option | Default | |
 |---|---|---|
 | `root` | `process.cwd()` | The project root |
-| `dirs` | `extensionDirs(root)` | The directories to look for modules in |
+| `webRoot` | `'web'` | Drupal's web root (the directory with its `index.php`), relative to `root`: e.g. `'docroot'`, or `''` when Drupal is the project root |
+| `dirs` | `extensionDirs(root, webRoot)` | The directories to look for modules in |

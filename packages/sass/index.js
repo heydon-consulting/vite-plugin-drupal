@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { extensionDirs, findExtensions, lookupExtension } from '@vite-plugin-drupal/libraries';
+import { extensionDirs, findExtensions, lookupExtension, webPath } from '@vite-plugin-drupal/libraries';
 
 /**
  * Compiles existing SCSS with Vite the way the Sass CLI did, so it does not
@@ -34,8 +34,8 @@ import { extensionDirs, findExtensions, lookupExtension } from '@vite-plugin-dru
  *   theme that has `preload` (a sub-theme without any uses its base theme's).
  *   A theme's files get their theme's; files in modules and profiles get a
  *   theme's and then their own: for one in a site's own directory
- *   (web/sites/<site>/modules), that site's theme from `siteThemes`; for any
- *   other, `moduleTheme`. `siteThemes` keys are site directory names or glob
+ *   (sites/<site>/modules in the web root, `webRoot`), that site's theme
+ *   from `siteThemes`; for any other, `moduleTheme`. `siteThemes` keys are site directory names or glob
  *   patterns for them (`*`, `?`, `{a,b}`), e.g.
  *   `{ 'site-a.*': 'site_a_theme', '*.example.com': 'my_theme' }`: an exact
  *   name wins, otherwise the first matching pattern in the order written. A
@@ -60,6 +60,7 @@ export default function drupalSass({
   preload = {},
   moduleTheme = null,
   siteThemes = {},
+  webRoot = 'web',
   dirs = null,
   silenceDeprecations = ['import', 'global-builtin', 'color-functions', 'slash-div', 'if-function', 'abs-percent'],
 } = {}) {
@@ -87,7 +88,7 @@ export default function drupalSass({
       };
 
       const preloads = createPreloads({
-        root, dirs: dirs ?? extensionDirs(root), preload, moduleTheme, siteThemes, find, resolvedLoadPaths,
+        root, webRoot, dirs: dirs ?? extensionDirs(root, webRoot), preload, moduleTheme, siteThemes, find, resolvedLoadPaths,
       });
 
       return {
@@ -141,8 +142,8 @@ const noExtension = '-';
 // Extensions are keyed by directory, as several sites can each have one of
 // the same name; names (moduleTheme, siteThemes, `base theme:`) are resolved
 // for the site the compiled file is in, as Drupal would for that site.
-function createPreloads({ root, dirs, preload, moduleTheme, siteThemes, find, resolvedLoadPaths }) {
-  const extensions = findExtensions(root, dirs);
+function createPreloads({ root, webRoot, dirs, preload, moduleTheme, siteThemes, find, resolvedLoadPaths }) {
+  const extensions = findExtensions(root, dirs, webRoot);
   const isTheme = (extension) => extension?.info.type === 'theme';
   if (moduleTheme && !isTheme(lookupExtension(extensions, moduleTheme))) {
     throw new Error(`drupalSass: moduleTheme '${moduleTheme}' is not a theme`);
@@ -157,7 +158,7 @@ function createPreloads({ root, dirs, preload, moduleTheme, siteThemes, find, re
   const sitePatterns = Object.entries(siteThemes).map(([pattern, theme]) => [globToRegExp(pattern), theme]);
 
   // The theme name whose preloads a module's (or profile's) files get: its
-  // site's theme for one in web/sites/<site>/, moduleTheme for any other.
+  // site's theme for one in sites/<site>/, moduleTheme for any other.
   const warned = new Set();
   const themeFor = ({ site }) => {
     if (site === null || site === 'all') {
@@ -170,7 +171,7 @@ function createPreloads({ root, dirs, preload, moduleTheme, siteThemes, find, re
     }
     if (!warned.has(site)) {
       warned.add(site);
-      console.warn(`drupalSass: no siteThemes entry matches web/sites/${site}; its modules use moduleTheme${moduleTheme ? ` (${moduleTheme})` : ''}.`);
+      console.warn(`drupalSass: no siteThemes entry matches ${webPath(webRoot, `sites/${site}`)}; its modules use moduleTheme${moduleTheme ? ` (${moduleTheme})` : ''}.`);
     }
     return moduleTheme;
   };
@@ -203,7 +204,7 @@ function createPreloads({ root, dirs, preload, moduleTheme, siteThemes, find, re
       if (seen.length) {
         return undefined;
       }
-      throw new Error(`drupalSass: theme '${name}' not found${site ? ` for web/sites/${site}` : ''}`);
+      throw new Error(`drupalSass: theme '${name}' not found${site ? ` for ${webPath(webRoot, `sites/${site}`)}` : ''}`);
     }
     const preloads = extension.info.vite?.preload;
     if (preloads !== undefined) {

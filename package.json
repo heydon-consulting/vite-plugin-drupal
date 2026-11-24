@@ -7,9 +7,10 @@
   ],
   "scripts": {
     "check": "node scripts/check.js",
+    "test": "node --test test/",
     "changeset": "changeset",
     "version-packages": "changeset version && npm install",
-    "release": "npm run check && changeset publish"
+    "release": "npm run check && npm test && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.1",

@@ -29,7 +29,8 @@ import { extensionDirs, findExtensions } from '@vite-plugin-drupal/libraries';
  */
 export default function bootstrapBreakpoints({
   root = process.cwd(),
-  dirs = extensionDirs(root),
+  webRoot = 'web',
+  dirs = extensionDirs(root, webRoot),
 } = {}) {
   let config;
   // Theme directory => { name, css, prefix, multipliers, file, deps }.
@@ -79,7 +80,7 @@ export default function bootstrapBreakpoints({
 
     configResolved(resolvedConfig) {
       config = resolvedConfig;
-      for (const [key, { name, dir, info }] of findExtensions(root, dirs)) {
+      for (const [key, { name, dir, info }] of findExtensions(root, dirs, webRoot)) {
         const options = info.vite?.breakpoints;
         if (info.type !== 'theme' || !options) {
           continue;

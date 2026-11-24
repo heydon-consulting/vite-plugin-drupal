@@ -51,7 +51,8 @@ import npmLibraries from '@vite-plugin-drupal/npm-libraries';
  */
 export default function drupalLibraries({
   root = process.cwd(),
-  dirs = extensionDirs(root),
+  webRoot = 'web',
+  dirs = extensionDirs(root, webRoot),
 } = {}) {
   const { inputs, packages, sources } = discover(root, dirs);
 
@@ -101,46 +102,76 @@ function findFiles(dir, suffix, found = []) {
 }
 
 /**
- * The directories Drupal finds extensions in, relative to `root`: web/modules,
- * web/themes and web/profiles, and each site's own (web/sites/<site>/modules
- * and /themes, including sites/all).
+ * A path in Drupal's web root, relative to the project root.
+ *
+ * @param {string} webRoot
+ *   The web root (the directory with Drupal's index.php), relative to the
+ *   project root: 'web' by default, or '' / '.' when Drupal is the project
+ *   root.
+ * @param {string} file
+ *   The path inside the web root.
+ *
+ * @returns {string}
+ */
+export function webPath(webRoot, file) {
+  const base = path.posix.normalize(webRoot || '.').replace(/\/+$/, '');
+  return base === '.' ? file : `${base}/${file}`;
+}
+
+/**
+ * The directories Drupal finds extensions in, relative to `root`: modules,
+ * themes and profiles in the web root, and each site's own
+ * (sites/<site>/modules and /themes, including sites/all).
+ *
+ * @param {string} root
+ *   The project root.
+ * @param {string} webRoot
+ *   Drupal's web root, relative to `root` (see webPath()).
  *
  * @returns {string[]}
  */
-export function extensionDirs(root = process.cwd()) {
-  const sites = path.resolve(root, 'web/sites');
+export function extensionDirs(root = process.cwd(), webRoot = 'web') {
+  const sites = path.resolve(root, webPath(webRoot, 'sites'));
   const siteDirs = fs.existsSync(sites)
     ? fs.readdirSync(sites, { withFileTypes: true })
       .filter((entry) => entry.isDirectory())
-      .flatMap((entry) => ['modules', 'themes'].map((type) => `web/sites/${entry.name}/${type}`))
+      .flatMap((entry) => ['modules', 'themes'].map((type) => webPath(webRoot, `sites/${entry.name}/${type}`)))
       .filter((dir) => fs.existsSync(path.resolve(root, dir)))
     : [];
-  return ['web/modules', 'web/themes', 'web/profiles', ...siteDirs];
+  return ['modules', 'themes', 'profiles'].map((type) => webPath(webRoot, type)).concat(siteDirs);
 }
 
 /**
  * Finds every module, theme and profile below `dirs`, by its .info.yml.
  *
  * Several sites can each have an extension of the same machine name, so they
- * are keyed by directory. `site` is the <site> of web/sites/<site>/ ('all'
- * for sites/all), or null for web/modules, web/themes and web/profiles. Two
- * of the same name in the same place stop the build, as Drupal can only use
- * one of them.
+ * are keyed by directory. `site` is the <site> of sites/<site>/ in the web
+ * root ('all' for sites/all), or null for the web root's modules, themes and
+ * profiles. Two of the same name in the same place stop the build, as Drupal
+ * can only use one of them.
+ *
+ * @param {string} root
+ *   The project root.
+ * @param {string[]} dirs
+ *   The directories to search, relative to `root`; extensionDirs() by default.
+ * @param {string} webRoot
+ *   Drupal's web root, relative to `root` (see webPath()).
  *
  * @returns {Map<string, {name: string, dir: string, site: string|null, info: object}>}
  *   Keyed by directory, relative to `root`.
  */
-export function findExtensions(root = process.cwd(), dirs = extensionDirs(root)) {
+export function findExtensions(root = process.cwd(), dirs = undefined, webRoot = 'web') {
   const extensions = new Map();
   const seen = new Map();
-  for (const infoFile of dirs.flatMap((dir) => findFiles(path.resolve(root, dir), '.info.yml'))) {
+  const sitesPrefix = webPath(webRoot, 'sites/');
+  for (const infoFile of (dirs ?? extensionDirs(root, webRoot)).flatMap((dir) => findFiles(path.resolve(root, dir), '.info.yml'))) {
     const dir = path.dirname(infoFile);
     const key = path.relative(root, dir).split(path.sep).join('/');
     const name = path.basename(infoFile, '.info.yml');
-    const site = /^web\/sites\/([^/]+)\//.exec(`${key}/`)?.[1] ?? null;
+    const site = key.startsWith(sitesPrefix) ? key.slice(sitesPrefix.length).split('/')[0] : null;
     const scope = `${site}\0${name}`;
     if (seen.has(scope)) {
-      throw new Error(`drupal-libraries: two extensions named ${name}${site ? ` in web/sites/${site}` : ''}: `
+      throw new Error(`drupal-libraries: two extensions named ${name}${site ? ` in ${sitesPrefix}${site}` : ''}: `
         + `${seen.get(scope)} and ${key}.`);
     }
     seen.set(scope, key);
@@ -151,15 +182,15 @@ export function findExtensions(root = process.cwd(), dirs = extensionDirs(root))
 
 /**
  * Finds the extension a machine name means to a site, as Drupal does: the
- * site's own (web/sites/<site>/) first, then web/modules, web/themes and
- * web/profiles, then sites/all.
+ * site's own (sites/<site>/) first, then the web root's modules, themes and
+ * profiles, then sites/all.
  *
  * @param {Map} extensions
  *   From findExtensions().
  * @param {string} name
  *   The machine name.
  * @param {string|null} site
- *   The site, or null for none (web/modules etc., then sites/all).
+ *   The site, or null for none (the web root's modules etc., then sites/all).
  *
  * @returns {{name: string, dir: string, site: string|null, info: object}|undefined}
  */
