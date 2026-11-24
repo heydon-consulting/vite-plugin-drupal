@@ -2,7 +2,8 @@
 import fs from 'node:fs';
 
 let failed = false;
-for (const name of fs.readdirSync(new URL('../packages', import.meta.url))) {
+for (const dir of fs.readdirSync(new URL('../packages/', import.meta.url))) {
+  const { name } = JSON.parse(fs.readFileSync(new URL(`../packages/${dir}/package.json`, import.meta.url), 'utf8'));
   try {
     const { default: plugin } = await import(name);
     if (typeof plugin !== 'function') {

@@ -1,13 +1,13 @@
-# vite-plugin-drupal-ckeditor5
+# @vite-plugin-drupal/ckeditor5
 
 Builds Drupal CKEditor 5 plugins with Vite instead of webpack.
 
 ```sh
-npm install --save-dev vite-plugin-drupal-ckeditor5
+npm install --save-dev @vite-plugin-drupal/ckeditor5
 ```
 
 ```js
-import ckeditor5Plugins from 'vite-plugin-drupal-ckeditor5';
+import ckeditor5Plugins from '@vite-plugin-drupal/ckeditor5';
 
 export default defineConfig({
   plugins: [ckeditor5Plugins()],

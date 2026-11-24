@@ -1,22 +1,23 @@
 {
-  "name": "vite-plugin-drupal-bootstrap-breakpoints",
-  "version": "0.1.0",
-  "description": "Writes a Drupal theme's breakpoints.yml from Bootstrap's grid breakpoints.",
+  "name": "@vite-plugin-drupal/libraries",
+  "version": "0.1.1",
+  "description": "Builds Vite entries from Drupal *.libraries.yml and *.component.yml files.",
   "keywords": [
     "vite",
     "vite-plugin",
     "drupal",
-    "bootstrap",
-    "breakpoints"
+    "libraries",
+    "sdc",
+    "components"
   ],
-  "homepage": "https://github.com/heydon-consulting/vite-plugin-drupal/tree/main/packages/vite-plugin-drupal-bootstrap-breakpoints#readme",
+  "homepage": "https://github.com/heydon-consulting/vite-plugin-drupal/tree/main/packages/libraries#readme",
   "bugs": {
     "url": "https://github.com/heydon-consulting/vite-plugin-drupal/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/heydon-consulting/vite-plugin-drupal.git",
-    "directory": "packages/vite-plugin-drupal-bootstrap-breakpoints"
+    "directory": "packages/libraries"
   },
   "license": "MIT",
   "author": "Gordon Heydon",
@@ -29,7 +30,8 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "dependencies": {
-    "vite-plugin-drupal-libraries": "^0.1.0"
+    "@vite-plugin-drupal/npm-libraries": "^0.1.0",
+    "yaml": "^2.9.1"
   },
   "peerDependencies": {
     "vite": "^8.0.0"

@@ -1,14 +1,14 @@
-# vite-plugin-drupal-tailwind-breakpoints
+# @vite-plugin-drupal/tailwind-breakpoints
 
 Writes a Drupal theme's `<theme>.breakpoints.yml` from Tailwind CSS 4's
 breakpoints, so they're defined once, in CSS.
 
 ```sh
-npm install --save-dev vite-plugin-drupal-tailwind-breakpoints @tailwindcss/node
+npm install --save-dev @vite-plugin-drupal/tailwind-breakpoints @tailwindcss/node
 ```
 
 ```js
-import tailwindBreakpoints from 'vite-plugin-drupal-tailwind-breakpoints';
+import tailwindBreakpoints from '@vite-plugin-drupal/tailwind-breakpoints';
 
 export default defineConfig({
   plugins: [tailwindBreakpoints()],

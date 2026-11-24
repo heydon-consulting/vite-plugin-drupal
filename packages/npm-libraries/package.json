@@ -1,23 +1,22 @@
 {
-  "name": "vite-plugin-drupal-libraries",
-  "version": "0.1.1",
-  "description": "Builds Vite entries from Drupal *.libraries.yml and *.component.yml files.",
+  "name": "@vite-plugin-drupal/npm-libraries",
+  "version": "0.1.0",
+  "description": "Copies prebuilt files from npm packages into the Vite build for Drupal libraries.",
   "keywords": [
     "vite",
     "vite-plugin",
     "drupal",
-    "libraries",
-    "sdc",
-    "components"
+    "npm",
+    "libraries"
   ],
-  "homepage": "https://github.com/heydon-consulting/vite-plugin-drupal/tree/main/packages/vite-plugin-drupal-libraries#readme",
+  "homepage": "https://github.com/heydon-consulting/vite-plugin-drupal/tree/main/packages/npm-libraries#readme",
   "bugs": {
     "url": "https://github.com/heydon-consulting/vite-plugin-drupal/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/heydon-consulting/vite-plugin-drupal.git",
-    "directory": "packages/vite-plugin-drupal-libraries"
+    "directory": "packages/npm-libraries"
   },
   "license": "MIT",
   "author": "Gordon Heydon",
@@ -28,10 +27,6 @@
   ],
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
-  },
-  "dependencies": {
-    "vite-plugin-drupal-npm-libraries": "^0.1.0",
-    "yaml": "^2.9.1"
   },
   "peerDependencies": {
     "vite": "^8.0.0"

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { extensionDirs, findExtensions, lookupExtension } from 'vite-plugin-drupal-libraries';
+import { extensionDirs, findExtensions, lookupExtension } from '@vite-plugin-drupal/libraries';
 
 /**
  * Compiles existing SCSS with Vite the way the Sass CLI did, so it does not

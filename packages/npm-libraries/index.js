@@ -10,7 +10,7 @@ import { parseAst } from 'vite';
  * path with `vite: true`, and the drupal/vite module rewrites them to the
  * copied dist file (or to the dev server while `vite` is running).
  *
- * Usually configured by vite-plugin-drupal-libraries from *.libraries.yml.
+ * Usually configured by @vite-plugin-drupal/libraries from *.libraries.yml.
  *
  * Options, keyed by package name:
  *   files:  Paths inside the package to copy, either strings or
