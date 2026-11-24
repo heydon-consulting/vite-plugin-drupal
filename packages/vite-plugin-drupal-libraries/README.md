@@ -40,8 +40,27 @@ What is managed mirrors drupal/vite, minus overrides in `settings.php`:
   `js` list.
 - **Themes' `ckeditor5-stylesheets`:** when the theme is managed (the same
   `.info.yml` settings as for its libraries), or with
-  `vite.ckeditor5Stylesheets` for them alone. drupal/vite needs the patch from
-  [#3447335](https://www.drupal.org/node/3447335) to serve them.
+  `vite.ckeditor5Stylesheets` for them alone. drupal/vite needs a patch to
+  serve them (see below).
+
+## Themes' CKEditor 5 stylesheets
+
+Until it's released, [drupal/vite](https://www.drupal.org/project/vite) needs
+the patch from [#3447335](https://www.drupal.org/node/3447335) (merge request
+[!39](https://git.drupalcode.org/project/vite/-/merge_requests/39)) to pick up
+themes' `ckeditor5-stylesheets` and serve them from the Vite build. Without it
+they're still built, but CKEditor loads the source files. With Composer and
+cweagans/composer-patches:
+
+```json
+"extra": {
+    "patches": {
+        "drupal/vite": {
+            "#3447335 Load themes' ckeditor5-stylesheets with Vite": "https://git.drupalcode.org/project/vite/-/merge_requests/39.diff"
+        }
+    }
+}
+```
 
 ## npm files
 

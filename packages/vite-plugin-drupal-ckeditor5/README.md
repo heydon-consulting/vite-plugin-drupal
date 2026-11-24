@@ -34,23 +34,6 @@ with a source in this layout. CSS the plugin imports is loaded with it.
 
 ## The Drupal side
 
-[drupal/vite](https://www.drupal.org/project/vite) needs the patch from
-[#3447335](https://www.drupal.org/node/3447335) (merge request
-[!39](https://git.drupalcode.org/project/vite/-/merge_requests/39)) until it
-is released, so that it also serves themes' `ckeditor5-stylesheets` from the
-Vite build: the styles the editor content gets. vite-plugin-drupal-libraries
-builds those. With Composer and cweagans/composer-patches:
-
-```json
-"extra": {
-    "patches": {
-        "drupal/vite": {
-            "#3447335 Load themes' ckeditor5-stylesheets with Vite": "https://git.drupalcode.org/project/vite/-/merge_requests/39.diff"
-        }
-    }
-}
-```
-
 Drupal still loads `js/build/<pluginName>.js`, so a module has to swap it for
 the plugin's source in `hook_library_info_alter()`, running before
 [drupal/vite](https://www.drupal.org/project/vite)'s, and set `vite: true` on
