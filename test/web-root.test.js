@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { after, describe, test } from 'node:test';
-import drupalLibraries, { extensionDirs, findExtensions, webPath } from '@vite-plugin-drupal/libraries';
+import drupalLibraries, { extensionDirs, findExtensions, webPath } from 'vite-plugin-drupal-libraries';
 
 const projects = [];
 after(() => projects.forEach((dir) => fs.rmSync(dir, { recursive: true, force: true })));

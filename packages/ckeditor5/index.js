@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { parseAst } from 'vite';
 import { parse } from 'yaml';
-import { extensionDirs, findExtensions } from '@vite-plugin-drupal/libraries';
+import { extensionDirs, findExtensions } from 'vite-plugin-drupal-libraries';
 
 /**
  * Builds Drupal CKEditor 5 plugins with Vite instead of webpack.

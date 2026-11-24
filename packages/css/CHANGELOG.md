@@ -1,4 +1,4 @@
-# @vite-plugin-drupal/css
+# vite-plugin-drupal-css
 
 ## 0.2.0
 
@@ -9,4 +9,4 @@
 ### Patch Changes
 
 - Updated dependencies [3e9c28c]
-  - @vite-plugin-drupal/libraries@0.2.0
+  - vite-plugin-drupal-libraries@0.2.0

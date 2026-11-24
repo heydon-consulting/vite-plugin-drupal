@@ -1,5 +1,5 @@
 {
-  "name": "@vite-plugin-drupal/ckeditor5",
+  "name": "vite-plugin-drupal-ckeditor5",
   "version": "0.2.0",
   "description": "Builds Drupal CKEditor 5 plugins with Vite instead of webpack.",
   "keywords": [
@@ -29,7 +29,7 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "dependencies": {
-    "@vite-plugin-drupal/libraries": "^0.2.0",
+    "vite-plugin-drupal-libraries": "^0.2.0",
     "yaml": "^2.9.1"
   },
   "peerDependencies": {

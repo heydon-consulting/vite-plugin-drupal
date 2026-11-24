@@ -1,4 +1,4 @@
-# @vite-plugin-drupal/libraries
+# vite-plugin-drupal-libraries
 
 ## 0.2.0
 

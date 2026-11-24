@@ -1,16 +1,16 @@
-# @vite-plugin-drupal/css
+# vite-plugin-drupal-css
 
 Drupal-aware CSS compilation for Vite: load paths for `@import`, and
 stylesheets preloaded into every CSS file from the modules' and themes'
 `.info.yml`, made for Tailwind CSS 4.
 
 ```sh
-npm install --save-dev @vite-plugin-drupal/css
+npm install --save-dev vite-plugin-drupal-css
 ```
 
 ```js
 import tailwindcss from '@tailwindcss/vite';
-import drupalCss from '@vite-plugin-drupal/css';
+import drupalCss from 'vite-plugin-drupal-css';
 
 export default defineConfig({
   plugins: [

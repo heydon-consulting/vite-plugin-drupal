@@ -1,5 +1,5 @@
 {
-  "name": "@vite-plugin-drupal/libraries",
+  "name": "vite-plugin-drupal-libraries",
   "version": "0.2.0",
   "description": "Builds Vite entries from Drupal *.libraries.yml and *.component.yml files.",
   "keywords": [
@@ -30,7 +30,7 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "dependencies": {
-    "@vite-plugin-drupal/npm-libraries": "^0.1.0",
+    "vite-plugin-drupal-npm-libraries": "^0.1.0",
     "yaml": "^2.9.1"
   },
   "peerDependencies": {

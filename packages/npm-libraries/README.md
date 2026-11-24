@@ -1,4 +1,4 @@
-# @vite-plugin-drupal/npm-libraries
+# vite-plugin-drupal-npm-libraries
 
 Copies prebuilt files out of npm packages into the Vite build output and
 registers them in the Vite manifest. Drupal libraries can then reference the
@@ -6,11 +6,11 @@ files by their `node_modules` path with `vite: true`, and
 [drupal/vite](https://www.drupal.org/project/vite) rewrites them to the copy
 (or to the dev server while Vite is running).
 
-Usually [@vite-plugin-drupal/libraries](../libraries) configures it from
+Usually [vite-plugin-drupal-libraries](../libraries) configures it from
 `*.libraries.yml`, so you don't need to add it yourself. To use it directly:
 
 ```js
-import npmLibraries from '@vite-plugin-drupal/npm-libraries';
+import npmLibraries from 'vite-plugin-drupal-npm-libraries';
 
 npmLibraries({
   'powerbi-client': { files: ['dist/powerbi.min.js'], global: true },

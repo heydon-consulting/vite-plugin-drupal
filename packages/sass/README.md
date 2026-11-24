@@ -1,14 +1,14 @@
-# @vite-plugin-drupal/sass
+# vite-plugin-drupal-sass
 
 Compiles existing Drupal SCSS with Vite the way the Sass CLI did, so it
 doesn't need converting to the module system or to Vite's URL rules.
 
 ```sh
-npm install --save-dev @vite-plugin-drupal/sass sass-embedded
+npm install --save-dev vite-plugin-drupal-sass sass-embedded
 ```
 
 ```js
-import drupalSass from '@vite-plugin-drupal/sass';
+import drupalSass from 'vite-plugin-drupal-sass';
 
 export default defineConfig({
   plugins: [
