@@ -1,4 +1,4 @@
-# vite-drupal
+# vite-plugin-drupal
 
 Vite plugins that build a Drupal site's front-end assets from Drupal's own
 YAML: `*.libraries.yml`, `*.component.yml`, `*.ckeditor5.yml` and `.info.yml`.

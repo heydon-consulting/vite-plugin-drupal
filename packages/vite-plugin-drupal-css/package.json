@@ -9,13 +9,13 @@
     "css",
     "tailwindcss"
   ],
-  "homepage": "https://github.com/heydon-consulting/vite-drupal/tree/main/packages/vite-plugin-drupal-css#readme",
+  "homepage": "https://github.com/heydon-consulting/vite-plugin-drupal/tree/main/packages/vite-plugin-drupal-css#readme",
   "bugs": {
-    "url": "https://github.com/heydon-consulting/vite-drupal/issues"
+    "url": "https://github.com/heydon-consulting/vite-plugin-drupal/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/heydon-consulting/vite-drupal.git",
+    "url": "git+https://github.com/heydon-consulting/vite-plugin-drupal.git",
     "directory": "packages/vite-plugin-drupal-css"
   },
   "license": "MIT",
