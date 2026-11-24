@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { parse } from 'yaml';
-import npmLibraries from 'vite-drupal-npm-libraries';
+import npmLibraries from 'vite-plugin-drupal-npm-libraries';
 
 /**
  * Builds the Vite config from Drupal *.libraries.yml and *.component.yml
@@ -9,7 +9,7 @@ import npmLibraries from 'vite-drupal-npm-libraries';
  *
  * Every asset of a library or Single Directory Component that drupal/vite
  * manages is picked up:
- * - files under node_modules/ are copied by vite-drupal-npm-libraries;
+ * - files under node_modules/ are copied by vite-plugin-drupal-npm-libraries;
  * - any other file (JS, SCSS, CSS...) becomes a build entry.
  *
  * Options for an npm file go on the asset itself, under `vite:`:

@@ -8,13 +8,13 @@ the Vite dev server) in their place.
 
 | Package | What it does |
 |---|---|
-| [vite-drupal-libraries](packages/vite-drupal-libraries) | Build entries from the libraries and Single Directory Components drupal/vite manages, and themes' `ckeditor5-stylesheets` |
-| [vite-drupal-npm-libraries](packages/vite-drupal-npm-libraries) | Copies prebuilt files out of npm packages for Drupal libraries (used by vite-drupal-libraries) |
-| [vite-drupal-ckeditor5](packages/vite-drupal-ckeditor5) | Builds CKEditor 5 plugins against core's CKEditor 5 DLL, instead of with webpack |
-| [vite-drupal-sass](packages/vite-drupal-sass) | Compiles existing SCSS the way the Sass CLI did, with partials preloaded from `.info.yml` |
-| [vite-drupal-css](packages/vite-drupal-css) | Load paths, and Tailwind `@reference` preloads from `.info.yml`, for plain CSS |
-| [vite-drupal-bootstrap-breakpoints](packages/vite-drupal-bootstrap-breakpoints) | Writes a theme's `breakpoints.yml` from Bootstrap's grid breakpoints |
-| [vite-drupal-tailwind-breakpoints](packages/vite-drupal-tailwind-breakpoints) | Writes a theme's `breakpoints.yml` from Tailwind's breakpoints |
+| [vite-plugin-drupal-libraries](packages/vite-plugin-drupal-libraries) | Build entries from the libraries and Single Directory Components drupal/vite manages, and themes' `ckeditor5-stylesheets` |
+| [vite-plugin-drupal-npm-libraries](packages/vite-plugin-drupal-npm-libraries) | Copies prebuilt files out of npm packages for Drupal libraries (used by vite-plugin-drupal-libraries) |
+| [vite-plugin-drupal-ckeditor5](packages/vite-plugin-drupal-ckeditor5) | Builds CKEditor 5 plugins against core's CKEditor 5 DLL, instead of with webpack |
+| [vite-plugin-drupal-sass](packages/vite-plugin-drupal-sass) | Compiles existing SCSS the way the Sass CLI did, with partials preloaded from `.info.yml` |
+| [vite-plugin-drupal-css](packages/vite-plugin-drupal-css) | Load paths, and Tailwind `@reference` preloads from `.info.yml`, for plain CSS |
+| [vite-plugin-drupal-bootstrap-breakpoints](packages/vite-plugin-drupal-bootstrap-breakpoints) | Writes a theme's `breakpoints.yml` from Bootstrap's grid breakpoints |
+| [vite-plugin-drupal-tailwind-breakpoints](packages/vite-plugin-drupal-tailwind-breakpoints) | Writes a theme's `breakpoints.yml` from Tailwind's breakpoints |
 
 Each package is versioned and published on its own; install only the ones a
 site uses.
@@ -24,8 +24,8 @@ site uses.
 ```js
 // vite.config.js
 import { defineConfig } from 'vite';
-import drupalLibraries from 'vite-drupal-libraries';
-import drupalSass from 'vite-drupal-sass';
+import drupalLibraries from 'vite-plugin-drupal-libraries';
+import drupalSass from 'vite-plugin-drupal-sass';
 
 export default defineConfig({
   base: './',

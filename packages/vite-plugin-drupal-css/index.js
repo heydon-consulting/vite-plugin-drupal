@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { extensionDirs, findExtensions, lookupExtension } from 'vite-drupal-libraries';
+import { extensionDirs, findExtensions, lookupExtension } from 'vite-plugin-drupal-libraries';
 
 /**
  * Drupal-aware CSS compilation: load paths for @import, and stylesheets

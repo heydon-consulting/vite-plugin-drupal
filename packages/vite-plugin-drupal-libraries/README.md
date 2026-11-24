@@ -1,14 +1,14 @@
-# vite-drupal-libraries
+# vite-plugin-drupal-libraries
 
 Builds the Vite config from Drupal `*.libraries.yml` and `*.component.yml`
 files, so assets only have to be defined once.
 
 ```sh
-npm install --save-dev vite-drupal-libraries
+npm install --save-dev vite-plugin-drupal-libraries
 ```
 
 ```js
-import drupalLibraries from 'vite-drupal-libraries';
+import drupalLibraries from 'vite-plugin-drupal-libraries';
 
 export default defineConfig({
   plugins: [drupalLibraries()],
@@ -17,14 +17,14 @@ export default defineConfig({
 ```
 
 It returns an array of plugins (this one and
-[vite-drupal-npm-libraries](../vite-drupal-npm-libraries)), which Vite flattens.
+[vite-plugin-drupal-npm-libraries](../vite-plugin-drupal-npm-libraries)), which Vite flattens.
 
 ## What it picks up
 
 Every asset of a library or Single Directory Component that
 [drupal/vite](https://www.drupal.org/project/vite) manages:
 
-- files under `node_modules/` are copied by vite-drupal-npm-libraries;
+- files under `node_modules/` are copied by vite-plugin-drupal-npm-libraries;
 - any other file (JS, SCSS, CSS...) becomes a build entry.
 
 What is managed mirrors drupal/vite, minus overrides in `settings.php`:
@@ -46,7 +46,7 @@ What is managed mirrors drupal/vite, minus overrides in `settings.php`:
 ## npm files
 
 Options for an npm file go on the asset itself, under `vite:`; see
-vite-drupal-npm-libraries for what they do:
+vite-plugin-drupal-npm-libraries for what they do:
 
 ```yaml
 js:
@@ -76,7 +76,7 @@ In dev, the server restarts when a `*.libraries.yml`, `*.component.yml` or
 
 ## Helpers
 
-The other vite-drupal packages use these, and they're exported for your own
+The other vite-plugin-drupal packages use these, and they're exported for your own
 plugins:
 
 - `extensionDirs(root)`: the directories Drupal finds extensions in:

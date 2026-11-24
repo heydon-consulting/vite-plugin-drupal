@@ -1,5 +1,5 @@
 {
-  "name": "vite-drupal-sass",
+  "name": "vite-plugin-drupal-sass",
   "version": "0.1.0",
   "description": "Compiles existing Drupal SCSS with Vite the way the Sass CLI did, with partials preloaded from .info.yml.",
   "keywords": [
@@ -9,14 +9,14 @@
     "sass",
     "scss"
   ],
-  "homepage": "https://github.com/heydon-consulting/vite-drupal/tree/main/packages/vite-drupal-sass#readme",
+  "homepage": "https://github.com/heydon-consulting/vite-drupal/tree/main/packages/vite-plugin-drupal-sass#readme",
   "bugs": {
     "url": "https://github.com/heydon-consulting/vite-drupal/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/heydon-consulting/vite-drupal.git",
-    "directory": "packages/vite-drupal-sass"
+    "directory": "packages/vite-plugin-drupal-sass"
   },
   "license": "MIT",
   "author": "Gordon Heydon",
@@ -29,7 +29,7 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "dependencies": {
-    "vite-drupal-libraries": "^0.1.0"
+    "vite-plugin-drupal-libraries": "^0.1.0"
   },
   "peerDependencies": {
     "vite": "^8.0.0",

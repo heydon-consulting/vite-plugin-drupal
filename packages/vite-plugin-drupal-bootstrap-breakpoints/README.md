@@ -1,14 +1,14 @@
-# vite-drupal-bootstrap-breakpoints
+# vite-plugin-drupal-bootstrap-breakpoints
 
 Writes a Drupal theme's `<theme>.breakpoints.yml` from Bootstrap's grid
 breakpoints, so they're defined once, in Sass.
 
 ```sh
-npm install --save-dev vite-drupal-bootstrap-breakpoints
+npm install --save-dev vite-plugin-drupal-bootstrap-breakpoints
 ```
 
 ```js
-import bootstrapBreakpoints from 'vite-drupal-bootstrap-breakpoints';
+import bootstrapBreakpoints from 'vite-plugin-drupal-bootstrap-breakpoints';
 
 export default defineConfig({
   plugins: [bootstrapBreakpoints()],
