@@ -1,5 +1,14 @@
 # vite-plugin-drupal-ckeditor5
 
+## 0.2.1
+
+### Patch Changes
+
+- bd68e22: Leave out plugins whose library has `vite: false`, so a module can keep its own webpack build.
+- Updated dependencies [8585595]
+- Updated dependencies [3453b8c]
+  - vite-plugin-drupal-libraries@0.3.0
+
 ## 0.2.0
 
 ### Minor Changes

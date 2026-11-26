@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-drupal-npm-libraries",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Copies prebuilt files from npm packages into the Vite build for Drupal libraries.",
   "keywords": [
     "vite",

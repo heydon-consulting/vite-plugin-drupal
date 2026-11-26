@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-drupal-css",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Load paths and Tailwind @reference preloads from .info.yml for Drupal CSS built with Vite.",
   "keywords": [
     "vite",
@@ -29,7 +29,7 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "dependencies": {
-    "vite-plugin-drupal-libraries": "^0.2.0"
+    "vite-plugin-drupal-libraries": "^0.3.0"
   },
   "peerDependencies": {
     "vite": "^8.0.0",

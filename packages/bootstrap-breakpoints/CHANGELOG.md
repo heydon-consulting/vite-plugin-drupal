@@ -1,5 +1,13 @@
 # vite-plugin-drupal-bootstrap-breakpoints
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [8585595]
+- Updated dependencies [3453b8c]
+  - vite-plugin-drupal-libraries@0.3.0
+
 ## 0.2.0
 
 ### Minor Changes
