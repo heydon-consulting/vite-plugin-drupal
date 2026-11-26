@@ -83,6 +83,12 @@ not: a file there that the npm package of that name has, at the same path, is
 copied like a `node_modules/` asset. A Drupal `hook_library_info_alter()` then
 has to point the library at the copy, using the Vite manifest.
 
+With `librariesDir` (e.g. `'web/libraries'`), those files are instead copied
+unchanged to `<librariesDir>/<package>/`, where the module already looks, so
+nothing has to point it at them. Only directories the build made are replaced
+or removed; one installed with Composer or by hand is left alone. See
+vite-plugin-drupal-npm-libraries.
+
 ## Options
 
 | Option | Default | |
@@ -90,6 +96,7 @@ has to point the library at the copy, using the Vite manifest.
 | `root` | `process.cwd()` | The project root |
 | `webRoot` | `'web'` | Drupal's web root (the directory with its `index.php`), relative to `root`: e.g. `'docroot'`, or `''` when Drupal is the project root |
 | `dirs` | `extensionDirs(root, webRoot)` | The directories to look for extensions in |
+| `librariesDir` | none | Where to copy npm packages' files for `/libraries/<package>/` assets, relative to `root`, e.g. `'web/libraries'`. Without it they're versioned copies in the build output and the manifest |
 
 In dev, the server restarts when a `*.libraries.yml`, `*.component.yml` or
 `.info.yml` changes.

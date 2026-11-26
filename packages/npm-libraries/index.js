@@ -39,11 +39,26 @@ import { parseAst } from 'vite';
  *           instead of the one in the package's package.json (e.g. 0.0.0 in
  *           a package installed from a git tag).
  *
+ *   libraries: Paths inside the package to copy unchanged to
+ *           <librariesDir>/<package>/, where Composer or a download would put
+ *           the library, for a contrib module that loads it from
+ *           /libraries/<package>/. Needs the `librariesDir` setting. These
+ *           aren't in the manifest: Drupal loads them like any /libraries
+ *           files.
+ *
  * Copies keep their path inside the package, under <package>@<version>/.
  * Files a copied CSS file references with url() or @import are copied too
  * (and imported CSS is scanned in turn), so its relative URLs keep working.
  * External, absolute and data: URLs are left alone; a reference to a file
  * the package doesn't have is reported as a warning.
+ *
+ * Settings (the second argument):
+ *   librariesDir: Drupal's libraries directory, relative to the Vite root
+ *           (e.g. 'web/libraries'), for packages' `libraries` files. A
+ *           package directory there that this plugin didn't create (no
+ *           .npm-libraries.json in it), e.g. one installed with Composer, is
+ *           left alone, with a warning. Directories it created for packages
+ *           no longer used are removed.
  *
  * Example:
  *   npmLibraries({
@@ -53,12 +68,15 @@ import { parseAst } from 'vite';
  *     toc: { files: ['dist/toc.min.js'], global: true, version: '0.3.2' },
  *     dayjs: { files: [{ path: 'dayjs.min.js', global: true }, { path: 'plugin/utc.js', global: true }] },
  *     leaflet: { files: ['dist/leaflet.js', 'dist/leaflet.css'], global: true, copy: ['dist/images/*'] },
- *   })
+ *     photoswipe: { libraries: ['dist/photoswipe.css', 'dist/umd/photoswipe.umd.min.js'] },
+ *   }, { librariesDir: 'web/libraries' })
  */
-export default function npmLibraries(packages = {}) {
+export default function npmLibraries(packages = {}, { librariesDir } = {}) {
   let config;
   // Map of source path (relative to the Vite root) => file definition.
   const files = new Map();
+  // Package name => { version, dir, files } for copies to librariesDir.
+  const librariesCopies = new Map();
 
   const manifestName = () => (typeof config.build.manifest === 'string'
     ? config.build.manifest
@@ -179,35 +197,39 @@ export default function npmLibraries(packages = {}) {
           if (!matches.length) {
             throw new Error(`npm-libraries: copy pattern "${pattern}" matches no files in ${name}.`);
           }
-          // A file also listed keeps its own options.
-          matches.filter((file) => !files.has(srcOf(file))).forEach((file) => add(file));
+          // A file also listed keeps its own options. Only libraries files:
+          // `copy` goes with those (below).
+          if (options.files?.length || !options.libraries?.length) {
+            matches.filter((file) => !files.has(srcOf(file))).forEach((file) => add(file));
+          }
         }
 
         // Files the CSS references, and the CSS those import.
-        const scanned = new Set();
-        while (css.length) {
-          const file = css.pop();
-          if (scanned.has(file)) {
-            continue;
+        cssClosure(packageDir, css, config.logger, name)
+          .filter((file) => !files.has(srcOf(file)))
+          .forEach((file) => add(file));
+
+        // Unchanged copies for /libraries/<package>/.
+        if (options.libraries?.length) {
+          if (!librariesDir) {
+            throw new Error(`npm-libraries: package "${name}" has libraries files, but librariesDir isn't set.`);
           }
-          scanned.add(file);
-          for (const reference of cssReferences(fs.readFileSync(path.join(packageDir, file), 'utf8'))) {
-            const target = path.posix.normalize(path.posix.join(path.posix.dirname(file), reference));
-            if (target.startsWith('../')) {
-              config.logger.warn(`npm-libraries: ${name}/${file} references ${reference}, outside the package; not copied.`);
-            }
-            else if (!fs.existsSync(path.join(packageDir, target)) || !fs.statSync(path.join(packageDir, target)).isFile()) {
-              config.logger.warn(`npm-libraries: ${name}/${file} references ${reference}, which the package doesn't have.`);
-            }
-            else {
-              if (!files.has(srcOf(target))) {
-                add(target);
-              }
-              if (target.endsWith('.css')) {
-                css.push(target);
-              }
+          const listed = [...new Set(options.libraries)];
+          for (const file of listed) {
+            if (!fs.existsSync(path.join(packageDir, file))) {
+              throw new Error(`npm-libraries: ${name}/${file} does not exist.`);
             }
           }
+          const all = new Set(listed);
+          // `copy` files go with them when the package has no build copies.
+          if (!options.files?.length) {
+            for (const pattern of copy) {
+              matchFiles(packageDir, pattern).forEach((file) => all.add(file));
+            }
+          }
+          cssClosure(packageDir, listed.filter((file) => file.endsWith('.css')), config.logger, name)
+            .forEach((file) => all.add(file));
+          librariesCopies.set(name, { version, dir: packageDir, files: [...all].sort() });
         }
       }
     },
@@ -217,6 +239,9 @@ export default function npmLibraries(packages = {}) {
     // version of the configured packages, and the package copies the last
     // build made (from its manifest), so packages no longer used go too.
     buildStart() {
+      if (librariesDir) {
+        copyToLibraries(path.resolve(config.root, librariesDir), librariesCopies, config.logger);
+      }
       if (config.command !== 'build') {
         return;
       }
@@ -287,6 +312,87 @@ export default function npmLibraries(packages = {}) {
       fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
     },
   };
+}
+
+// The marker in a librariesDir package directory this plugin created.
+const MARKER = '.npm-libraries.json';
+
+// Copies packages' `libraries` files to <librariesDir>/<package>/, replacing
+// only directories this plugin created (with a MARKER), and removes the ones
+// it created for packages no longer used.
+function copyToLibraries(librariesDir, copies, logger) {
+  const owned = new Set();
+  if (fs.existsSync(librariesDir)) {
+    for (const entry of fs.readdirSync(librariesDir, { withFileTypes: true })) {
+      if (!entry.isDirectory()) {
+        continue;
+      }
+      const names = entry.name.startsWith('@')
+        ? fs.readdirSync(path.join(librariesDir, entry.name)).map((child) => `${entry.name}/${child}`)
+        : [entry.name];
+      names.filter((name) => fs.existsSync(path.join(librariesDir, name, MARKER))).forEach((name) => owned.add(name));
+    }
+  }
+
+  for (const name of owned) {
+    if (!copies.has(name)) {
+      removeDir(librariesDir, name);
+    }
+  }
+  for (const [name, { version, dir, files }] of copies) {
+    const target = path.join(librariesDir, name);
+    if (fs.existsSync(target) && !owned.has(name)) {
+      logger.warn(`npm-libraries: ${path.relative(process.cwd(), target) || target} wasn't made by this build `
+        + `(installed another way?), so it's left alone. Remove it to use the npm package ${name}@${version}.`);
+      continue;
+    }
+    removeDir(librariesDir, name);
+    for (const file of files) {
+      fs.mkdirSync(path.dirname(path.join(target, file)), { recursive: true });
+      fs.copyFileSync(path.join(dir, file), path.join(target, file));
+    }
+    fs.writeFileSync(path.join(target, MARKER), `${JSON.stringify({ package: name, version, files }, null, 2)}\n`);
+  }
+}
+
+// Removes <librariesDir>/<name>, and an @scope directory it leaves empty.
+function removeDir(librariesDir, name) {
+  fs.rmSync(path.join(librariesDir, name), { recursive: true, force: true });
+  const scope = path.dirname(path.join(librariesDir, name));
+  if (scope !== librariesDir && fs.existsSync(scope) && !fs.readdirSync(scope).length) {
+    fs.rmdirSync(scope);
+  }
+}
+
+// The files stylesheets reference with url() and @import, and those the
+// imported stylesheets reference in turn, relative to the package.
+function cssClosure(packageDir, stylesheets, logger, name) {
+  const found = new Set();
+  const css = [...stylesheets];
+  const scanned = new Set();
+  while (css.length) {
+    const file = css.pop();
+    if (scanned.has(file)) {
+      continue;
+    }
+    scanned.add(file);
+    for (const reference of cssReferences(fs.readFileSync(path.join(packageDir, file), 'utf8'))) {
+      const target = path.posix.normalize(path.posix.join(path.posix.dirname(file), reference));
+      if (target.startsWith('../')) {
+        logger.warn(`npm-libraries: ${name}/${file} references ${reference}, outside the package; not copied.`);
+      }
+      else if (!fs.existsSync(path.join(packageDir, target)) || !fs.statSync(path.join(packageDir, target)).isFile()) {
+        logger.warn(`npm-libraries: ${name}/${file} references ${reference}, which the package doesn't have.`);
+      }
+      else {
+        found.add(target);
+        if (target.endsWith('.css')) {
+          css.push(target);
+        }
+      }
+    }
+  }
+  return [...found];
 }
 
 // The relative url() and @import references of a stylesheet, without any

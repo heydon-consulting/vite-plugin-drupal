@@ -45,7 +45,10 @@ import npmLibraries from 'vite-plugin-drupal-npm-libraries';
  * (where Composer or a manual download would put it) are covered too, managed
  * or not: a file there that the npm package of that name has, at the same
  * path, is copied like a node_modules/ asset. A Drupal module then has to
- * point the library at the copy (see the README).
+ * point the library at the copy (see the README). With `librariesDir` set
+ * (e.g. 'web/libraries'), those files are copied unchanged to
+ * <librariesDir>/<package>/ instead, where the module looks for them, so
+ * nothing has to point it anywhere.
  *
  * Returns plugins, so use it as `plugins: [drupalLibraries()]`.
  */
@@ -53,8 +56,9 @@ export default function drupalLibraries({
   root = process.cwd(),
   webRoot = 'web',
   dirs = extensionDirs(root, webRoot),
+  librariesDir,
 } = {}) {
-  const { inputs, packages, sources } = discover(root, dirs);
+  const { inputs, packages, sources } = discover(root, dirs, Boolean(librariesDir));
 
   return [
     {
@@ -63,7 +67,7 @@ export default function drupalLibraries({
       config: () => ({ build: { rollupOptions: { input: inputs } } }),
 
       configResolved(config) {
-        const npmFiles = Object.values(packages).reduce((count, p) => count + p.files.length, 0);
+        const npmFiles = Object.values(packages).reduce((count, p) => count + p.files.length + (p.libraries?.length ?? 0), 0);
         config.logger.info(`drupal-libraries: ${inputs.length} entries and ${npmFiles} npm files from `
           + `${sources.libraries} libraries.yml and ${sources.components} component.yml files`);
       },
@@ -79,7 +83,7 @@ export default function drupalLibraries({
         server.watcher.on('change', restart).on('add', restart).on('unlink', restart);
       },
     },
-    npmLibraries(packages),
+    npmLibraries(packages, { librariesDir: librariesDir && path.resolve(root, librariesDir) }),
   ];
 }
 
@@ -238,14 +242,15 @@ function isManagedAsset(assetPath, options) {
 }
 
 // For a /libraries/<package>/<file> asset whose npm package has that file,
-// the path to it in node_modules/, relative to the extension; otherwise null.
-function librariesPath(root, extensionDir, assetPath) {
-  const match = /^\/libraries\/((?:@[^/]+\/)?[^/]+)\/(.+)$/.exec(assetPath);
+// { name, file, npmPath }: npmPath is the file in node_modules/, relative to
+// the extension. Otherwise null.
+function librariesAsset(root, extensionDir, assetPath) {
+  const match = /^\/libraries\/((?:@[^/]+\/)?[^/]+)\/([^?#]+)$/.exec(assetPath);
   const file = match && path.join(root, 'node_modules', match[1], match[2]);
-  if (!file || !fs.existsSync(file)) {
+  if (!file || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
     return null;
   }
-  return path.relative(extensionDir, file).split(path.sep).join('/');
+  return { name: match[1], file: match[2], npmPath: path.relative(extensionDir, file).split(path.sep).join('/') };
 }
 
 // Yields [path, options] for every JS and CSS asset of a library.
@@ -272,7 +277,7 @@ function componentLibrary(file) {
   return { ...library, ...(readYaml(file).libraryOverrides ?? {}) };
 }
 
-function discover(root, dirs) {
+function discover(root, dirs, toLibrariesDir = false) {
   const inputs = new Set();
   const packages = {};
   const sources = { libraries: 0, components: 0 };
@@ -340,9 +345,14 @@ function discover(root, dirs) {
         }
         const managed = isManaged(library, info, 'enableInAllLibraries');
         for (const [assetPath, options] of assets(library)) {
-          const npmPath = librariesPath(root, extensionDir, assetPath);
-          if (npmPath) {
-            add(`${extension}/${libraryId}`, extensionDir, npmPath, options);
+          const npm = librariesAsset(root, extensionDir, assetPath);
+          if (npm && toLibrariesDir) {
+            // Copied unchanged to <librariesDir>/<package>/.
+            packages[npm.name] ??= { files: [] };
+            packages[npm.name].libraries = [...new Set([...(packages[npm.name].libraries ?? []), npm.file])];
+          }
+          else if (npm) {
+            add(`${extension}/${libraryId}`, extensionDir, npm.npmPath, options);
           }
           else if (managed) {
             add(`${extension}/${libraryId}`, extensionDir, assetPath, options, library.version);

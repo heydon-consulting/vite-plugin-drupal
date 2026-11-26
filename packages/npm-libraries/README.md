@@ -42,6 +42,35 @@ npmLibraries({
 - **`version`:** the version in the copies' `<package>@<version>/` directory,
   instead of the one in the package's `package.json`.
 
+- **`libraries`:** paths inside the package to copy unchanged to
+  `<librariesDir>/<package>/` (see below) instead, for a contrib module that
+  loads the library from `/libraries/<package>/`.
+
 Copies keep their path inside the package, under `<package>@<version>/` in
 the build output. Files a copied stylesheet references with `url()` or
 `@import` are copied too, so its relative URLs keep working.
+
+## Copying to /libraries
+
+Contrib modules often load a third-party library from
+`/libraries/<package>/`, where Composer (asset-packagist) or a download would
+put it. With `librariesDir`, the second argument, a package's `libraries`
+files are copied there unchanged, so the module finds them without any
+changes:
+
+```js
+npmLibraries({
+  photoswipe: { libraries: ['dist/photoswipe.css', 'dist/umd/photoswipe.umd.min.js'] },
+}, { librariesDir: 'web/libraries' });
+```
+
+`librariesDir` is relative to the Vite root, and may be the build output
+directory. The copies aren't in the Vite manifest: Drupal serves them like any
+`/libraries` files, and the library's `version:` gives them a `?v=` query for
+cache busting.
+
+Each directory it creates has a `.npm-libraries.json` listing the package,
+version and files. Only those directories are replaced on a rebuild, and
+removed when no longer used. A directory without one (installed with
+Composer or by hand) is left alone, with a warning. The copies are made in dev
+too, when the dev server starts.
