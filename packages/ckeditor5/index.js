@@ -25,7 +25,7 @@ import { extensionDirs, findExtensions } from 'vite-plugin-drupal-libraries';
  * loading js/build/<pluginName>.js, for its `<pluginName>.<Class>` plugins
  * with a source in this layout. A Drupal module then has to load this build
  * in place of js/build/<pluginName>.js (see the README). CSS the plugin
- * imports is loaded with it.
+ * imports is loaded with it. A library with `vite: false` is left alone.
  */
 export default function ckeditor5Plugins({
   root = process.cwd(),
@@ -153,7 +153,13 @@ function findEntries(root, dirs, webRoot) {
       if (typeof library !== 'string' || !library.startsWith(`${name}/`)) {
         continue;
       }
-      const js = libraries[library.slice(name.length + 1)]?.js ?? {};
+      const definitionLibrary = libraries[library.slice(name.length + 1)];
+      // A library drupal/vite doesn't manage keeps its own build, e.g. one
+      // made with webpack like a contrib module's.
+      if (definitionLibrary?.vite === false) {
+        continue;
+      }
+      const js = definitionLibrary?.js ?? {};
       for (const plugin of definition.ckeditor5?.plugins ?? []) {
         const pluginName = String(plugin).split('.')[0];
         const source = path.join(dir, 'js/ckeditor5_plugins', pluginName, 'src/index.js');

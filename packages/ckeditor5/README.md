@@ -32,6 +32,18 @@ for webpack: a definition whose `drupal.library` is a library of the module
 loading `js/build/<pluginName>.js`, for its `<pluginName>.<Class>` plugins
 with a source in this layout. CSS the plugin imports is loaded with it.
 
+A plugin whose library has `vite: false` is left out, so a module can keep its
+own webpack build (a contrib module's, say) on a site that builds the others
+with Vite:
+
+```yaml
+# mymodule.libraries.yml
+my_plugin:
+  vite: false
+  js:
+    js/build/myPlugin.js: { minified: true }
+```
+
 ## The Drupal side
 
 Drupal still loads `js/build/<pluginName>.js`, so a module has to swap it for
