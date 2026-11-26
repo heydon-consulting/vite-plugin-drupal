@@ -89,6 +89,17 @@ nothing has to point it at them. Only directories the build made are replaced
 or removed; one installed with Composer or by hand is left alone. See
 vite-plugin-drupal-npm-libraries.
 
+Packages listed in `librariesDirExclude` are left out of `librariesDir`, and
+are versioned copies in the manifest as without it, for a site module that
+points their library at the manifest's copy:
+
+```js
+drupalLibraries({
+  librariesDir: 'web/libraries',
+  librariesDirExclude: ['ckeditor5-elements-path'],
+});
+```
+
 ## Options
 
 | Option | Default | |
@@ -97,6 +108,7 @@ vite-plugin-drupal-npm-libraries.
 | `webRoot` | `'web'` | Drupal's web root (the directory with its `index.php`), relative to `root`: e.g. `'docroot'`, or `''` when Drupal is the project root |
 | `dirs` | `extensionDirs(root, webRoot)` | The directories to look for extensions in |
 | `librariesDir` | none | Where to copy npm packages' files for `/libraries/<package>/` assets, relative to `root`, e.g. `'web/libraries'`. Without it they're versioned copies in the build output and the manifest |
+| `librariesDirExclude` | `[]` | Packages not to copy to `librariesDir`: their `/libraries/<package>/` files are versioned copies in the manifest, as without it, for a site module that points the library at them |
 
 In dev, the server restarts when a `*.libraries.yml`, `*.component.yml` or
 `.info.yml` changes.

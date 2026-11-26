@@ -87,6 +87,19 @@ test('with librariesDir, they are copied unchanged to <librariesDir>/<package>/'
   assert.ok(!exists(root, 'web/dist/gallery@2.1.0'));
 });
 
+test('librariesDirExclude packages are versioned copies in the manifest instead', async () => {
+  const root = project();
+  await run(root, { librariesDir: 'web/libraries' });
+  assert.ok(exists(root, 'web/libraries/gallery/.npm-libraries.json'));
+
+  await run(root, { librariesDir: 'web/libraries', librariesDirExclude: ['gallery'] });
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, 'web/dist/.vite/manifest.json'), 'utf8'));
+  assert.equal(manifest['node_modules/gallery/dist/gallery.js'].file, 'gallery@2.1.0/dist/gallery.js');
+  assert.ok(exists(root, 'web/dist/gallery@2.1.0/dist/images/arrow.svg'));
+  // The copy an earlier build made is removed.
+  assert.ok(!exists(root, 'web/libraries/gallery'));
+});
+
 test('a rebuild replaces its own copies and removes unused ones', async () => {
   const root = project();
   await run(root, { librariesDir: 'web/libraries' });

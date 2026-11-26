@@ -48,7 +48,8 @@ import npmLibraries from 'vite-plugin-drupal-npm-libraries';
  * point the library at the copy (see the README). With `librariesDir` set
  * (e.g. 'web/libraries'), those files are copied unchanged to
  * <librariesDir>/<package>/ instead, where the module looks for them, so
- * nothing has to point it anywhere.
+ * nothing has to point it anywhere; except the packages in
+ * `librariesDirExclude`, which are copied as without it.
  *
  * Returns plugins, so use it as `plugins: [drupalLibraries()]`.
  */
@@ -57,8 +58,12 @@ export default function drupalLibraries({
   webRoot = 'web',
   dirs = extensionDirs(root, webRoot),
   librariesDir,
+  librariesDirExclude = [],
 } = {}) {
-  const { inputs, packages, sources } = discover(root, dirs, Boolean(librariesDir));
+  const toLibrariesDir = librariesDir
+    ? (name) => !librariesDirExclude.includes(name)
+    : () => false;
+  const { inputs, packages, sources } = discover(root, dirs, toLibrariesDir);
 
   return [
     {
@@ -277,7 +282,7 @@ function componentLibrary(file) {
   return { ...library, ...(readYaml(file).libraryOverrides ?? {}) };
 }
 
-function discover(root, dirs, toLibrariesDir = false) {
+function discover(root, dirs, toLibrariesDir = () => false) {
   const inputs = new Set();
   const packages = {};
   const sources = { libraries: 0, components: 0 };
@@ -346,7 +351,7 @@ function discover(root, dirs, toLibrariesDir = false) {
         const managed = isManaged(library, info, 'enableInAllLibraries');
         for (const [assetPath, options] of assets(library)) {
           const npm = librariesAsset(root, extensionDir, assetPath);
-          if (npm && toLibrariesDir) {
+          if (npm && toLibrariesDir(npm.name)) {
             // Copied unchanged to <librariesDir>/<package>/.
             packages[npm.name] ??= { files: [] };
             packages[npm.name].libraries = [...new Set([...(packages[npm.name].libraries ?? []), npm.file])];
