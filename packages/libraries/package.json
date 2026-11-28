@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-drupal-libraries",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Builds Vite entries from Drupal *.libraries.yml and *.component.yml files.",
   "keywords": [
     "vite",

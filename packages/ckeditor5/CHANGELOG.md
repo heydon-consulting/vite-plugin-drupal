@@ -1,5 +1,12 @@
 # vite-plugin-drupal-ckeditor5
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [78e3c48]
+  - vite-plugin-drupal-libraries@0.4.0
+
 ## 0.2.1
 
 ### Patch Changes

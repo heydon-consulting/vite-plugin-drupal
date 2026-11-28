@@ -1,5 +1,11 @@
 # vite-plugin-drupal-libraries
 
+## 0.4.0
+
+### Minor Changes
+
+- 78e3c48: Themes' `ckeditor5-stylesheets` are only built with the new `ckeditor5Stylesheets: true` option, as drupal/vite needs a patch (#3447335) to serve them. Sites with the patch need to turn it on.
+
 ## 0.3.0
 
 ### Minor Changes
