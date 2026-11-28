@@ -38,19 +38,25 @@ What is managed mirrors drupal/vite, minus overrides in `settings.php`:
   in `libraryOverrides`. Their assets are core's auto-discovered
   `<name>.css` / `<name>.js`, unless `libraryOverrides` replaces the `css` or
   `js` list.
-- **Themes' `ckeditor5-stylesheets`:** when the theme is managed (the same
-  `.info.yml` settings as for its libraries), or with
-  `vite.ckeditor5Stylesheets` for them alone. drupal/vite needs a patch to
-  serve them (see below).
+- **Themes' `ckeditor5-stylesheets`:** only with the `ckeditor5Stylesheets:
+  true` option, as drupal/vite needs a patch to serve them (see below). Then
+  when the theme is managed (the same `.info.yml` settings as for its
+  libraries), or with `vite.ckeditor5Stylesheets` for them alone.
 
 ## Themes' CKEditor 5 stylesheets
 
 Until it's released, [drupal/vite](https://www.drupal.org/project/vite) needs
 the patch from [#3447335](https://www.drupal.org/node/3447335) (merge request
 [!39](https://git.drupalcode.org/project/vite/-/merge_requests/39)) to pick up
-themes' `ckeditor5-stylesheets` and serve them from the Vite build. Without it
-they're still built, but CKEditor loads the source files. With Composer and
-cweagans/composer-patches:
+themes' `ckeditor5-stylesheets` and serve them from the Vite build, so they
+aren't built unless you turn them on, once the patch is applied:
+
+```js
+drupalLibraries({ ckeditor5Stylesheets: true });
+```
+
+Without the patch, CKEditor loads the source files, and building them would be
+of no use. To apply it with Composer and cweagans/composer-patches:
 
 ```json
 "extra": {
@@ -108,6 +114,7 @@ drupalLibraries({
 | `webRoot` | `'web'` | Drupal's web root (the directory with its `index.php`), relative to `root`: e.g. `'docroot'`, or `''` when Drupal is the project root |
 | `dirs` | `extensionDirs(root, webRoot)` | The directories to look for extensions in |
 | `librariesDir` | none | Where to copy npm packages' files for `/libraries/<package>/` assets, relative to `root`, e.g. `'web/libraries'`. Without it they're versioned copies in the build output and the manifest |
+| `ckeditor5Stylesheets` | `false` | Whether to build themes' `ckeditor5-stylesheets`. Turn it on only with the drupal/vite patch that serves them (see above); `vite.ckeditor5Stylesheets` in a theme's `.info.yml` can then still turn them off for that theme |
 | `librariesDirExclude` | `[]` | Packages not to copy to `librariesDir`: their `/libraries/<package>/` files are versioned copies in the manifest, as without it, for a site module that points the library at them |
 
 In dev, the server restarts when a `*.libraries.yml`, `*.component.yml` or

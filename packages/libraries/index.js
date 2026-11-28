@@ -36,10 +36,11 @@ import npmLibraries from 'vite-plugin-drupal-npm-libraries';
  *   `libraryOverrides` replaces the `css` or `js` list (paths relative to the
  *   component directory).
  *
- * Themes' `ckeditor5-stylesheets` (in .info.yml, not a library) are build
- * entries too, when the theme is managed: the same `vite` settings in its
- * .info.yml as for its libraries, or `vite.ckeditor5Stylesheets` for them
- * alone.
+ * With `ckeditor5Stylesheets: true`, themes' `ckeditor5-stylesheets` (in
+ * .info.yml, not a library) are build entries too, when the theme is managed:
+ * the same `vite` settings in its .info.yml as for its libraries, or
+ * `vite.ckeditor5Stylesheets` for them alone. They're off by default, as
+ * drupal/vite needs a patch to serve them.
  *
  * Contrib libraries that load a third-party library from /libraries/<package>/
  * (where Composer or a manual download would put it) are covered too, managed
@@ -59,11 +60,12 @@ export default function drupalLibraries({
   dirs = extensionDirs(root, webRoot),
   librariesDir,
   librariesDirExclude = [],
+  ckeditor5Stylesheets = false,
 } = {}) {
   const toLibrariesDir = librariesDir
     ? (name) => !librariesDirExclude.includes(name)
     : () => false;
-  const { inputs, packages, sources } = discover(root, dirs, toLibrariesDir);
+  const { inputs, packages, sources } = discover(root, dirs, toLibrariesDir, ckeditor5Stylesheets);
 
   return [
     {
@@ -282,7 +284,7 @@ function componentLibrary(file) {
   return { ...library, ...(readYaml(file).libraryOverrides ?? {}) };
 }
 
-function discover(root, dirs, toLibrariesDir = () => false) {
+function discover(root, dirs, toLibrariesDir = () => false, ckeditor5Stylesheets = false) {
   const inputs = new Set();
   const packages = {};
   const sources = { libraries: 0, components: 0 };
@@ -370,7 +372,7 @@ function discover(root, dirs, toLibrariesDir = () => false) {
     // ckeditor5/internal.drupal.ckeditor5.stylesheets library, which the
     // drupal/vite patch for #3447335 processes). Paths relative to the theme;
     // external and root-relative ones are left alone.
-    const ckeditorStylesheets = info.type === 'theme' && info['ckeditor5-stylesheets'];
+    const ckeditorStylesheets = ckeditor5Stylesheets && info.type === 'theme' && info['ckeditor5-stylesheets'];
     // `vite.ckeditor5Stylesheets` switches them on or off like a library's `vite:`.
     const stylesheetsLibrary = { vite: info.vite?.ckeditor5Stylesheets };
     if (Array.isArray(ckeditorStylesheets) && isManaged(stylesheetsLibrary, info, 'enableInAllLibraries')) {

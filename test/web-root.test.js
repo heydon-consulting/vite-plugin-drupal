@@ -66,3 +66,22 @@ for (const [label, webRoot, prefix] of [['web (default)', undefined, 'web/'], ['
     });
   });
 }
+
+describe('themes\' ckeditor5-stylesheets', () => {
+  const root = project('web');
+  fs.writeFileSync(path.join(root, 'web/sites/site-a/themes/my_theme/my_theme.info.yml'),
+    'name: My theme\ntype: theme\nvite: true\nckeditor5-stylesheets:\n  - css/editor.css\n');
+  fs.writeFileSync(path.join(root, 'web/sites/site-a/themes/my_theme/css/editor.css'), '');
+  const editor = 'web/sites/site-a/themes/my_theme/css/editor.css';
+
+  test('are not built by default', () => {
+    const built = inputs(root);
+    assert.ok(!built.includes(editor));
+    // The theme's libraries still are.
+    assert.ok(built.includes('web/sites/site-a/themes/my_theme/css/style.css'));
+  });
+
+  test('are built with ckeditor5Stylesheets: true', () => {
+    assert.ok(inputs(root, { ckeditor5Stylesheets: true }).includes(editor));
+  });
+});
